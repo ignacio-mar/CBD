@@ -1,0 +1,69 @@
+program Project1;
+type
+  tVehiculo= Record
+    codigoVehiculo:integer;
+    patente: String;
+    motor:String;
+    cantidadPuertas: integer;
+    precio:real;
+    descripcion:String;
+  end;
+  tArchivo = File of tVehiculo;
+Procedure agregar (var archivo: tArchivo; vehiculo: tVehiculo);
+var
+    cod_error,nlibre:integer;
+    slibre:tVehiculo;
+   begin
+     reset(archivo);
+     read(archivo,slibre);
+     val(slibre.descripcion,nlibre,cod_error);
+     if(nLibre=0) then
+     seek(archivo,filesize(archivo));
+     else
+     begin
+       seek(archivo,nlibre);
+       read(archivo,slibre);
+       seek(archivo,0);
+       write(archivo,slibre);
+       seek(archivo,nlibre);
+       end;
+     write(archivo,vehiculo);
+     close(archivo);
+   end;
+Procedure eliminar (var archivo: tArchivo; codigoVehiculo: integer);
+var
+    slibre,dato:tVehiculo;
+    nlibre:integer;
+Begin
+  reset(archivo);
+  read(archivo,slibre);
+  dato.codigoVehiculo:=-1;
+
+  while( dato.codigoVehiculo<>codigoVehiculo or not eof(archivo)) do
+    read(archivo,dato);
+
+  if(dato.codigoVehiculo=codigoVehiculo) then begin
+         nlibre:=filePos(archivo) -1;
+         seek(archivo,nlibre);
+         write(archivo,slibre);
+         str(nlibre,slibre.descripcion);
+         seek(archivo,0);
+         write(archivo,slibre);
+         end
+  else
+    writeln('no existe la raza');
+    close(archivo);
+
+  end;
+
+
+var
+    arhivo:tArchivo;
+
+begin
+
+assign(archivo,'archivo_tVehiculo.dat');
+
+
+end.
+       
