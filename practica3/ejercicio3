@@ -1,0 +1,24 @@
+a)
+type
+  producto_t=record
+     codigo:integer;
+     nombre:string[30];
+     descripcion:string[60];
+     stock:integer;
+  end;
+  archivo_producto:file of producto_t;    
+  procedure punto_A (var archivoTexto:text; var archivo:archivo_producto);
+var
+   producto:producto_t;
+ begin
+   rewrite(archivo);
+   reset(archivo);
+   while(not eof(archivoText)) do begin
+   readln(archivoTexto,producto.codigo,producto.nombre,producto.descripcion,producto.stock);
+   write(archivo,producto);
+   end;
+   close(archivoTexto);
+   close(archivo);
+ end;
+
+ b)
