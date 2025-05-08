@@ -100,3 +100,53 @@ var
     else writeln('no existe');
     close(archivo);
     end;  
+
+e)
+procedure punto_E(var archivo:archivo_producto);
+var
+    slibre,producto:producto_t;
+    nlibre,cod_error:integer;
+    begin
+      writeln('ingrese los datos de una nueva indumentaria');
+   readln(producto.codigo);
+   readln(producto.nombre);
+   readln(producto.descripcion);
+   readln(producto.stock);
+   reset(archivo);
+     reset(archivo);
+     read(archivo,slibre);
+     val(slibre.descripcion,nlibre,cod_error);
+     if(nlibre=-1) then
+        seek(archivo,filesize(a));
+     else
+     begin
+      seek(archivo,nlibre);
+      read(archivo,slibre);
+      seek(archivo,0);
+      write(archivo,slibre);
+      seek(archivo,nlibre);
+      end;
+     write(archivo,producto);
+     close(archivo);
+       end;  
+f)
+
+procedure punto_F(var archivoTexto:text;var archivo:archivo_producto);
+var
+    producto:producto_t;
+    numero:integer;
+ begin
+  rewrite(archivo);
+  reset(archivoTexto);
+  numero:=-1;
+  str(numero,producto.descripcion);
+  write(archivo,producto);
+
+  while (not eof(archivoTexto)) do begin
+    readln(archivoTexto,producto.codigo,producto.nombre,producto.descripcion,producto.stock);
+    write(archivo,producto);
+    end;
+  close(archivo);
+  close(archivoTexto);
+  end;  
+
