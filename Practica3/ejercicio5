@@ -1,0 +1,52 @@
+program Project1;
+type
+  articulo_t=record
+     nro:integer;
+     color:string[30];
+      talle:string[30];
+      precio:double;
+     descripcion:string[60];
+     stock:integer;
+  end;
+
+archivo_articulos:file of articulo_t;
+procedure baja_logica(var archivo:archivo_articulos; var eliminados:text; nro:integer);
+ var
+   articulo:articulo_t;
+ begin
+   reset(archivo);
+   append(eliminados);
+   articulo.nro:=-2;
+   while(not eof(archivo) and articulo.nro<>nro) do
+     read(archivo,articulo);
+
+   if(articulo.nro=nro) then begin
+     writeln(eliminados,articulo.nro,articulo.color,articulo.talle,articulo.precio,articulo.descripcion,articulo.stock);
+     articulo.nro:=0;
+     seek(archivo,filepos(archivo)-1);
+     write(archivo,articulo);
+     end
+   else writeln('no existe el codigo a eliminar');
+   close(archivo);
+   close(eliminados);
+   end;
+
+var
+  archivo:archivo_articulos;
+  eliminados:text;
+  nro:integer;
+  begin
+    assign(archivo,'articulos.dat');
+    assign(eliminados,'eliminados.txt');
+
+    rewrite(eliminados);
+    close(eliminados);
+    writeln('ingrese numero de articulo a eliminar hasta ingresar el cero');
+    readln(nro);
+    while(nro<>0)do begin
+      baja_logica(archivo,eliminados,nro);
+      writeln('ingrese numero de articulo a eliminar');
+      readln(nro);
+      end;
+    end.
+
