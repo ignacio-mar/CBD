@@ -22,3 +22,81 @@ var
  end;
 
  b)
+
+procedure punto_B(var archivo:archivo_producto);
+ var
+ codigo:integer;
+ producto:producto_t;
+ begin 
+   writeln('ingrese codigo hasta ingresar el cero');
+   readln(codigo);
+    while(codigo<>0)do begin
+       reset(archivo);
+       producto.codigo=-1;
+       while(not eof(archivo) and codigo<>producto.codigo) do
+       read(archivo,producto);
+       if(producto.codigo=codigo) then  begin
+          producto.codigo:=0;
+          seek(archivo,filepos(archivo)-1);
+          write(archivo,producto);
+        end;
+     close(archivo);
+     writeln('ingrese codigo');
+     readln(codigo);
+   end;
+   end;  
+
+
+c)
+
+procedure puntoC(var archivo:archivo_producto);
+var
+ codigo,pos:integer;
+ producto,slibre:producto_t;
+begin
+    writeln('ingrese los datos de una nueva indumentaria');
+   readln(producto.codigo);
+   readln(producto.nombre);
+   readln(producto.descripcion);
+   readln(producto.stock);
+   reset(archivo);
+   slibre.codigo:=-2;
+   while(not eof(archivo) and -1<>slibre.codigo) do
+       read(archivo,slibre);
+
+       if(slibre=-1) then
+          seek(archivo,filepos(archivo)-1);
+       else
+       seek(archivo,filesize(archivo));
+
+     write(archivo,producto);
+     close(archivo);
+  end;
+
+
+d)
+procedure puntoD(var archivo:archivo_producto);
+var
+    slibre,producto:producto_t;
+    nlibre,codigo:integer;
+
+ begin
+    writeln('ingrese codigo');
+    readln(codigo);
+    reset(archivo);
+    read(archivo,slibre);
+    producto.codigo:=-2:
+    while(not eof(archivo) and producto.codigo<>codigo) do
+        read(archivo,producto);
+
+    if(producto.codigo=codigo) then begin
+       nlibre:=filepos(archivo)-1;
+       seek(archivo,nlibre);
+       write(archivo,slibre);
+       str(nlibre,slibre.descripcion);
+       seek(archivo,0);
+       write(archivo,slibre);
+       end
+    else writeln('no existe');
+    close(archivo);
+    end;  
