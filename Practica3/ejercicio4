@@ -1,0 +1,73 @@
+program Project1;
+type
+  disco_t=record
+     codigo:integer;
+     album:string[30];
+      genero:string[30];
+       artista:string[30];
+     descripcion:string[60];
+     anio:integer;
+     stock:integer;
+  end;
+
+archivo_discos:file of disco_t;
+
+procedure modificarStock(var archivo:archivo_discos; codigo:integer);
+var
+  disco:disco_t;
+ begin
+   reset(archivo);
+   disco.codigo=-2;
+   while(not eof(archivo) and disco.codigo<>codigo) do
+     read(archivo,disco);
+
+   if(disco.codigo=codigo) then begin
+     seek(archivo,filepos(archivo)-1);
+     disco.stock:=0;
+     writeln('el nombre del album sin stock es: ',disco.album);
+     write(archivo,disco);
+     end
+   else
+   writeln('no existe ningun disco con el codigo ingresado');
+   close(archivo);
+   end;
+
+procedure compactacion(var archivo:archivo_discos);
+var
+  posBorrar:integer;
+  aux,disco:disco_t;
+  begin
+    reset(archivo);
+    while(not eof(archivo))do begin
+    read(archivo,disco);
+    if(disco.stock=0) then begin
+      posBorrar:=filePos(archivo)-1;
+      seek(archivo,filesize(archivo)-1);
+      read(archivo,aux);
+      seek(archivo,posBorrar);
+      write(archivo,aux);
+      seek(archivo,filesize(archivo)-1);
+      truncate(archivo);
+      seek(archivo,posBorrar +1);
+    end;
+    end;
+    close(archivo);
+    end;
+
+var
+  archivo:archivo_discos;
+  codigo:integer;
+begin
+  assign(archivo,'discos.dat');
+  writeln('ingrese codigo de disco sin stock hasta ingresar el "0"');
+  readln(codigo);
+  while(codigo<>0) do begin
+    modificarStock(archivo,codigo);
+     writeln('ingrese codigo de disco sin stock');
+  readln(codigo);
+  end;
+  compactacion(archivo);
+
+end.
+
+            
