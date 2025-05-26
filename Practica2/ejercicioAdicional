@@ -1,0 +1,100 @@
+program Project1;
+const valorAlto=9999999;
+type
+  localidad=record
+    codLocalidad:integer;
+    codProvincia:integer;
+    votosValidos:integer;
+    votosAnulados:integer;
+    votosBlancos:integer;
+  end;
+   provincia=record
+     codProvincia:integer;
+     nombre:string;
+    votosValidos:integer;
+    votosAnulados:integer;
+    votosBlancos:integer;
+   end;
+ archivoLocalidades= file of localidad;
+ registrosDetalle=array[1..500] of localidad;
+ archivosDetalle=array[1..500] of archivoLocalidades;
+ archivoProvincias=file of provincia;
+
+ procedure leer(var archivo:archivoLocalidades; var dato:localidad);
+ begin
+   if(not eof(archivo)) then
+     read(archivo,dato);
+   else
+     dato.codProvincia:=valorAlto;
+ end;
+procedure minimo(var detalles:archivosDetalle; var registros:registrosDetalle; var min:localidad);
+var
+  posMin,i:integer;
+begin
+  posMin:=1;
+  min:=registros[i];
+  for i:=2 to 500 do begin
+    if(registros[i].codProvincia<min.codProvincia) then begin
+      min:=registros[i];
+      posMin:=i;
+    end;
+  end;
+  leer(detalles[posMin],registros[posMin]);
+end;
+
+var
+  archivo:archivoProvincias;
+  detalles:archivosDetalle;
+  registros:registrosDetalle;
+  i,codProvincia,codLocalidad,votosValidos,votosBlancos,votosAnulados,totalAnulados,totalBlancos,totalValidos:integer;
+  min:localidad;
+  regProvincia:provincia;
+  archivoTexto:text;
+begin
+  assign(archivo,'provincias.dat');
+  reset(archivo);
+  assign(archivoTexto,'cantidad_votos_04_07_2023.txt');
+  for i:=0 to 500 do begin
+    assign(detalles[i],'archivo_detalle',i,'.dat');
+    reset(detalles[i]);
+    leer(detalles[i],registros[i]);
+  end;
+  totalValidos:=0;
+  totalAnulados:=0;
+  totalBlancos:=0;
+  regProvincia.codProvincia:=valorAlto;
+   minimo(detalles,registros,min)
+   while(min.codProvincia<>valorAlto) do begin
+     codProvincia:=min.codProvincia;
+     votosBlancos:=0;
+     votosAnulados:=0;
+     votosValidos:=0;
+     while(codProvincia=min.codProvincia) do begin
+       votosBlancos:=min.votosBlancos+votosBlancos;
+       votosValidos:=min.votosValidos+votosValidos;
+       votosAnulados:=min.votosAnulados+votosAnulados;
+       minimo(detalles,registros,min);
+     end;
+     while(regProvincia.codProvincia<>codProvincia) do
+      read(archivo,regProvincia);
+     regProvincia.votosAnulados:=regProvincia.votosAnulados+votosAnulados;
+     regProvincia.votosBlancos:=regProvincia.votosBlancos+votosBlancos;
+     regProvincia.votosValidos:=regProvincia.votosValidos+votosValidos;
+     seek(archivo,filePos(archivo)-1);
+     write(archivo,regProvincia);
+     totalBlancos:=totalBlancos+regProvincia.votosBlancos;
+     totalValidos:=totalValidos+regProvincia.votosValidos;
+       totalAnulados:=totalAnulados+regProvincia.votosAnulados;
+   end;
+  rewrite(archivoTexto);
+  writeln(archivoTexto,'cantidad de votos procesados: 500')
+  writeln(archivoTexto,'Cantidad total de votos: ',totalBlancos+totalAnulados+totalValidos);
+  writeln(archivoTexto,'Cantidad total de votos Validos: ',totalValidos);
+  writeln(archivoTexto,'Cantidad total de votos anulados: ',totalAnulados);
+  writeln(archivoTexto,'Cantidad total de votos en blanco: ',totalBlancos);
+  close(archivo);
+  close(archivoTexto);
+  for i:=1 to 500 do
+    close(detalles[i]);
+end.
+                 
