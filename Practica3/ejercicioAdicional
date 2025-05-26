@@ -1,0 +1,81 @@
+program Project1;
+const valorAlto=9999999;
+type
+  turno=record
+    dni:integer;
+    nombre:string;
+    apellido:string;
+    especialista:string;
+    fecha:string;
+  end;
+ archivoTurnos= file of turno;
+procedure agregarRegistro(var archivo:archivoTurnos; registro:turno);
+var
+  cabecera:turno;
+  begin
+    reset(archivo);
+    read(archivo,cabecera);
+    if(cabecera.dni<0) then begin
+       seek(archivo,-cabecera.dni);
+       read(archivo,cabecera);
+       seek(archivo,filePos(archivo)-1);
+       write(archivo,registro);
+       seek(archivo,0);
+       write(archivo,cabecera);
+    end
+    else
+    begin
+      seek(archivo,filesize(archivo));
+      write(archivo,registro);
+    end;
+    close(archivo);
+  end;
+
+procedure eliminarRegistro(var archivo:archivoTurnos;dni:integer);
+var
+   cabecera,registro:turno;
+   posEliminar:integer;
+  begin
+    reset(archivo);
+    read(archivo,cabecera);
+    registro.dni:=0;
+    while(archivo.dni<>dni and not eof(archivo)) do
+     read(archivo,registro);
+
+    if(registro.dni=dni) then begin
+       posEliminar:=filePos(archivo)-1;
+       seek(archivo,posEliminar);
+       write(archivo,cabecera);
+       registro.dni:= -posEliminar;
+       seek(archivo,0);
+       write(archivo,registro);
+    end
+    else
+    writeln('no existe el registro a eliminar');
+    close(archivo);
+  end;
+
+var
+  archivo:archivoTurnos;
+  i,dni:integer;
+  registro:turno;
+  archivoTexto:text;
+begin
+  assign(archivo,'turnos.dat');
+  assign(archivoTexto,'bajas_del_dia.txt');
+  reset(archivoTexto);
+  writeln('ingrese dni hasta ingresar el 0');
+  readln(dni);
+  while(dni<>0) do begin
+    eliminarRegistro(archivo,dni);
+    writeln('ingrese dni hasta ingresar el 0');
+    readln(dni);
+  end;
+
+  while(not eof(archivoTexto)) do begin
+  writeln(archivoTexto,registro.dni,registro.nombre,registro.apellido,registro.especialista,registro.fecha);
+  agregarRegistro(archivo,registro);
+ end;
+  close(archivoTexto);
+end.
+               
